@@ -1,0 +1,75 @@
+-- Borrowers table
+CREATE TABLE borrowers (
+    borrower_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    ssn VARCHAR(11) UNIQUE,
+    date_of_birth DATE,
+    email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(20),
+    marital_status VARCHAR(20),
+    citizenship_status VARCHAR(50)
+);
+
+-- Loan applications table
+CREATE TABLE loan_applications (
+    application_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    borrower_id INT,
+    application_date DATE NOT NULL,
+    loan_amount_requested DECIMAL(12, 2) NOT NULL,
+    loan_type VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    FOREIGN KEY (borrower_id) REFERENCES borrowers(borrower_id)
+);
+
+-- Properties table
+CREATE TABLE properties (
+    property_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    application_id INT UNIQUE,
+    address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    zip_code VARCHAR(10) NOT NULL,
+    appraised_value DECIMAL(12, 2),
+    purchase_price DECIMAL(12, 2),
+    FOREIGN KEY (application_id) REFERENCES loan_applications(application_id)
+);
+
+-- Loans table
+CREATE TABLE loans (
+    loan_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    application_id INT UNIQUE,
+    original_loan_amount DECIMAL(12, 2) NOT NULL,
+    interest_rate DECIMAL(5, 4) NOT NULL,
+    term_months INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    monthly_payment DECIMAL(10, 2) NOT NULL,
+    current_balance DECIMAL(12, 2) NOT NULL,
+    FOREIGN KEY (application_id) REFERENCES loan_applications(application_id)
+);
+
+-- Amortization schedule table
+CREATE TABLE amortization_schedule (
+    schedule_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    loan_id INT,
+    payment_number INT NOT NULL,
+    scheduled_date DATE NOT NULL,
+    payment_amount DECIMAL(10, 2) NOT NULL,
+    principal_portion DECIMAL(10, 2) NOT NULL,
+    interest_portion DECIMAL(10, 2) NOT NULL,
+    ending_balance DECIMAL(12, 2) NOT NULL,
+    FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
+);
+
+-- Payments table
+CREATE TABLE payments (
+    payment_id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    loan_id INT,
+    payment_date DATE NOT NULL,
+    payment_amount DECIMAL(10, 2) NOT NULL,
+    allocated_principal DECIMAL(10, 2) NOT NULL,
+    allocated_interest DECIMAL(10, 2) NOT NULL,
+    late_fees DECIMAL(8, 2) DEFAULT 0,
+    FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
+);

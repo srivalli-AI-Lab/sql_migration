@@ -1,0 +1,9 @@
+{
+  "loan_applications": "mortgage_requests",
+  "borrowers": "clients", 
+  "properties": "real_estate",
+  "loans": "mortgages",
+  "amortization_schedule": "repayment_schedule",
+  "payments": "transactions"
+}
+
